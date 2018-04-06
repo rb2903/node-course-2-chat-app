@@ -1,9 +1,8 @@
 const express = require('express');
-const path = require('path');// for easier directory navigation
+const path = require('path');
 const socketIO = require('socket.io');
-const http = require('http');
+const http = require('http')
 const port = process.env.PORT || 3000;
-const {generateMessage} = require('./utils/message');
 
 var app = express();
 var server = http.createServer(app);
@@ -15,16 +14,28 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
    console.log('New user connected');
 
-   socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app!'));
-   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New joiner!'));
+// Emits event to single connection
+   // socket.emit('newMessage', {
+   //    from: 'rob',
+   //    text: 'Hello',
+   //    createdAt: 123
+   // });
 
 // Listening for createMessage event
    socket.on('createMessage', (message) => {
       console.log('New message', message);
 // Emits event to every connection
-io.emit('newMessage', generateMessage(message.from, message.text));
+// io.emit('newMessage', {
+//    from: message.from,
+//    text: message.text,
+//    createdAt: new Date().getTime()
+// })
 // Emits event to every user apart from the sender
-      // socket.broadcast.emit('newMessage', generateMessage(message.from, message.text));
+socket.broadcast.emit('newMessage', {
+   from: message.from,
+   text: message.text,
+   createdAt: new Date().getTime()
+})
    });
 
    socket.on('disconnect', () => {
