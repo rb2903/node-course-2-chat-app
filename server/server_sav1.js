@@ -3,7 +3,7 @@ const path = require('path');// for easier directory navigation
 const socketIO = require('socket.io');
 const http = require('http');
 const port = process.env.PORT || 3000;
-const {generateMessage, generateLocationMessage} = require('./utils/message');
+const {generateMessage} = require('./utils/message');
 
 var app = express();
 var server = http.createServer(app);
@@ -24,10 +24,12 @@ io.on('connection', (socket) => {
 // Emits event to every connection
    io.emit('newMessage', generateMessage(message.from, message.text));
    callback('This is from the server');
+// Emits event to every user apart from the sender
+// socket.broadcast.emit('newMessage', generateMessage(message.from, message.text));
 });
-   socket.on('createLocationMessage', (coords) => {
-      io.emit('newLocationMessage',generateLocationMessage('Admin', coords.latitude, coords.longitude));
-   });
+socket.on('createLocationMessage', (coords) => {
+   io.emit('newMessage',generateMessage('Admin', `${coords.latitude}, ${coords.longitude}`));
+});
 
    socket.on('disconnect', () => {
       console.log('User disconnected');
