@@ -80,7 +80,8 @@ jQuery('#message-form').on('submit', function (e) {
    e.preventDefault();
    var messageTextbox = jQuery('[name=message]');
    socket.emit('createMessage', {
-      from: 'User',
+      // Don't populate from property here as it is held on the server
+      //from: 'User',
       text: messageTextbox.val()
    }, function(data) {
 // Clear the message field
